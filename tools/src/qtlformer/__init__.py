@@ -15,10 +15,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def validate_gcs_path(value: str) -> str:
-    logger.debug(f"Validating GCS path: {value}")
-    if not isinstance(value, str) or value.startswith(""):
-        raise typer.BadParameter("path must be valid path os gcs path")
+def validate_path(value: str) -> str:
+    if not isinstance(value, str) or value == "":
+        raise typer.BadParameter("path must be valid path")
     return value
 
 
@@ -66,7 +65,7 @@ class QTLDataset:
             return None
         susie_cs_path = f"{path}/{dataset_id}.credible_sets.parquet"
         susie_lbf_path = f"{path}/{dataset_id}.lbf_variable.parquet"
-        fs = filesystem("gcs", token="google_default")
+        fs = filesystem("local")
         if not fs.exists(susie_cs_path) or not fs.exists(susie_lbf_path):
             logger.warning(
                 f"Dataset '{dataset_id}' is missing required SuSiE files. Skipping."
@@ -97,7 +96,7 @@ class QTLStudy:
         return validate_name(name, r"^QTS\d+$")
 
     def get_datasets(self) -> Self:
-        fs = filesystem("gcs", token="google_default")
+        fs = filesystem("local")
         dataset_paths = fs.ls(self.path)
         datasets = [QTLDataset.from_path(p) for p in dataset_paths]
         datasets = [ds for ds in datasets if ds is not None]
@@ -114,20 +113,20 @@ class QTLManifest:
         self.df = self.transform()
 
     @staticmethod
-    def from_gcs_path(gcs_path: str, project_id: str) -> QTLManifest:
-        fs = filesystem("gcs", project=project_id, token="google_default")
+    def from_path(path: str) -> QTLManifest:
+        fs = filesystem("local")
         studies: list[QTLStudy] = []
-        study_paths = fs.ls(gcs_path)
+        study_paths = fs.ls(path)
 
         def _prepare_study_for_path(p: str) -> None | QTLStudy:
             try:
                 study = QTLStudy.from_path(p).get_datasets()
                 return study
             except DatasetOrStudyNameError:
-                logger.warning(f"Skipping invalid study path '{p}'")
+                logger.warning(f"Skipping invalid study path '{p}'local")
                 return None
 
-        logger.info(f"Found {len(study_paths)} blobs in {gcs_path}.")
+        logger.info(f"Found {len(study_paths)} blobs in {path}.")
         th = ThreadPoolExecutor(max_workers=5)
         result = list(th.map(_prepare_study_for_path, study_paths))
         studies = [study for study in result if study is not None]
@@ -158,7 +157,7 @@ class QTLManifest:
 
     def to_parquet(self, output_path: str) -> None:
         logger.info(f"Writing manifest to {output_path} in Parquet format.")
-        fs = filesystem("gcs", token="google_default")
+        fs = filesystem("local")
         with fs.open(output_path, "wb") as f:
             self.df.to_parquet(f)
         logger.info("Manifest successfully written.")
@@ -169,16 +168,13 @@ cli = typer.Typer(no_args_is_help=True)
 
 @cli.command()
 def manifest(
-    gcs_path: Annotated[str, typer.Argument(callback=validate_gcs_path)],
-    output_path: Annotated[str, typer.Argument(callback=validate_gcs_path)],
-    project_id: Annotated[
-        str, typer.Option(callback=validate_project_id)
-    ] = "open-targets-genetics-dev",
+    input_path: Annotated[str, typer.Argument(callback=validate_path)],
+    output_path: Annotated[str, typer.Argument(callback=validate_path)],
 ) -> None:
-    """Prepare QTL manifest from GCS path and save as parquet."""
+    """Prepare QTL manifest from path and save as parquet."""
 
     logger.info("Starting QTL manifest preparation.")
-    man = QTLManifest.from_gcs_path(gcs_path, project_id)
+    man = QTLManifest.from_path(input_path)
     man.log_statistics()
     man.to_parquet(output_path)
     logger.info("Reading blobs from source bucket.")
@@ -186,26 +182,20 @@ def manifest(
 
 @cli.command()
 def susie_to_study_locus(
-    susie_path: Annotated[str, typer.Argument(callback=validate_gcs_path)],
-    study_locus_path: Annotated[str, typer.Argument(callback=validate_gcs_path)],
-    project_id: Annotated[
-        str, typer.Option(callback=validate_project_id)
-    ] = "open-targets-genetics-dev",
+    susie_path: Annotated[str, typer.Argument(callback=validate_path)],
+    study_locus_path: Annotated[str, typer.Argument(callback=validate_path)],
 ) -> None:
-    """Harmonise SuSiE QTL data from GCS path and save as parquet."""
+    """Harmonise SuSiE QTL data from path and save as parquet."""
 
     logger.info("Starting SuSiE QTL harmonisation.")
 
 
 @cli.command()
 def manifest_to_study_index(
-    manifest_path: Annotated[str, typer.Argument(callback=validate_gcs_path)],
+    manifest_path: Annotated[str, typer.Argument(callback=validate_path)],
     metadata_path: Annotated[str, typer.Argument()],
-    study_index_path: Annotated[str, typer.Argument(callback=validate_gcs_path)],
-    project_id: Annotated[
-        str, typer.Option(callback=validate_project_id)
-    ] = "open-targets-genetics-dev",
+    study_index_path: Annotated[str, typer.Argument(callback=validate_path)],
 ) -> None:
-    """Convert QTL manifest from GCS path to study index parquet."""
+    """Convert QTL manifest from path to study index parquet."""
 
     logger.info("Starting QTL manifest to study index conversion.")

@@ -1,5 +1,5 @@
 process buildManifest {
-    container 'ubuntu:latest'
+    container 'ghcr.io/project-defiant/qtlformer:latest'
     publishDir "${params.output_dir}", mode: 'copy', pattern: 'manifest.json'
 
     input:
@@ -10,6 +10,6 @@ process buildManifest {
 
     script:
     """
-    ls -R ${gcs_path} > manifest.json
+    qtlformer manifest ${gcs_path} 
     """
 }
