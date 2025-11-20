@@ -1,5 +1,8 @@
 process buildManifest {
     container 'ghcr.io/project-defiant/qtlformer:latest'
+    cpus 2
+    memory '4 GB'
+    time '10m'
     publishDir "${params.output_dir}", mode: 'copy', pattern: 'manifest.json'
 
     input:
