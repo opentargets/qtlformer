@@ -1,18 +1,18 @@
 process buildManifest {
-    container 'ghcr.io/project-defiant/qtlformer:latest'
-    cpus 2
-    memory '4 GB'
+    container 'ghcr.io/project-defiant/qtlformer:0.2.1'
+    machineType 'n1-standard-4'
     time '10m'
-    publishDir "${params.output_dir}", mode: 'copy', pattern: 'manifest.json'
+    debug true
+    publishDir "${params.output_dir}", mode: 'copy', pattern: 'manifest.parquet'
 
     input:
     path input_path
 
     output:
-    path 'manifest.json', emit: manifest_file
+    path 'manifest.parquet', emit: manifest_file
 
     script:
     """
-    qtlformer manifest --input-path ${input_path} --output-path manifest.parquet
+    ls -R ${input_path} > output.parquet
     """
 }

@@ -22,4 +22,4 @@ RUN apt-get update && apt-get install -y procps
 
 # # Configure PATH to use the virtual environment's binaries
 ENV PATH="/app/.venv/bin:$PATH"
-ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["bin/bash"]
