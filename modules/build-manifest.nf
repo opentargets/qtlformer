@@ -1,5 +1,5 @@
 process buildManifest {
-    container 'ghcr.io/project-defiant/qtlformer:0.2.1'
+    container 'ghcr.io/project-defiant/qtlformer:0.2.2'
     machineType 'n1-standard-4'
     time '10m'
     debug true
