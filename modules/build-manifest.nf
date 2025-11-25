@@ -1,8 +1,5 @@
 process buildManifest {
-    container 'ghcr.io/project-defiant/qtlformer:0.2.4'
-    machineType 'n1-standard-4'
-    time '10m'
-    debug true
+    label 'regular'
     publishDir "${params.output_dir}", mode: 'copy', pattern: 'manifest.tsv'
 
     input:
