@@ -1,6 +1,7 @@
 nextflow.enable.dsl = 2
 
-include { Manifest } from './modules/manifest.nf'
+include { Manifest  } from './modules/manifest.nf'
+include { Transform } from './modules/transform.nf'
 
 def intro() {
     log.info(
@@ -12,14 +13,11 @@ def intro() {
         Susie directory:    ${params.susie_dir}
         Sumstats directory: ${params.sumstats_dir}
         Output directory:   ${params.output_dir}
+        Metadata:           ${params.metadata}
 
     """.stripIndent()
     )
 }
-
-/*
- * SET UP CONFIGURATION VARIABLES
- */
 
 
 workflow {
@@ -29,10 +27,11 @@ workflow {
     susie_ch = channel.fromPath(params.susie_dir)
     sumstats_ch = channel.fromPath(params.sumstats_dir)
     // Order of the channel [susie_path, sumstats_path]
-    input_ch = susie_ch.mix(sumstats_ch)
+    input_ch = susie_ch.combine(sumstats_ch)
     manifest_ch = Manifest(input_ch)
     // Transform the channel to [meta, cs_path, lbf_path]
-    datasets = manifest_ch.splitCsv(sep: '\t', header: true)
+    base_dir = new File(params.susie_dir.toString()).parent
+    dataset_ch = manifest_ch.splitCsv(sep: '\t', header: true)
         | map { r ->
             [
                 [
@@ -41,13 +40,10 @@ workflow {
                     dataset_id: r.dataset_id,
                     sumstats_path: "${params.sumstats_dir}/${r.sumstats_path}",
                 ],
-                file("${params.susie_dir}/${r.susie_cs_path}"),
-                file("${params.susie_dir}/${r.susie_lbf_path}"),
+                file("${base_dir}/${r.susie_cs_path}"),
+                file("${base_dir}/${r.susie_lbf_path}"),
             ]
         }
-    datasets.view()
-
-
-
+    Transform(dataset_ch, params.metadata)
     workflow.onComplete { log.info("Pipeline complete!") }
 }

@@ -1,23 +1,23 @@
 process Manifest {
-    label 'regular'
-    publishDir "${params.output_dir}", mode: 'copy', pattern: 'manifest.tsv'
+  label 'regular'
+  publishDir "${params.output_dir}", mode: 'copy', pattern: 'manifest.tsv'
 
-    input:
-    tuple path(susie_path), path(sumstats_path)
+  input:
+  tuple path(susie_path), path(sumstats_path)
 
-    output:
-    path 'manifest.tsv', emit: manifest_file
+  output:
+  path 'manifest.tsv', emit: manifest_file
 
-    script:
-    """
-    qtlformer manifest 
+  script:
+  """
+    qtlformer manifest \
       --susie-path ${susie_path} \
       --sumstats-path ${sumstats_path} \
       --output-path manifest.tsv
     """
 
-    stub:
-    """
+  stub:
+  """
     touch manifest.tsv
     """
 }
