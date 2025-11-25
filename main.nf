@@ -1,11 +1,18 @@
 nextflow.enable.dsl = 2
 
-include { buildManifest } from './modules/build-manifest.nf'
+include { Manifest } from './modules/manifest.nf'
 
 def intro() {
     log.info(
         """
         QTLFormer Nextflow Pipeline
+
+        Using:
+
+        Susie directory:    ${params.susie_dir}
+        Sumstats directory: ${params.sumstats_dir}
+        Output directory:   ${params.output_dir}
+
     """.stripIndent()
     )
 }
@@ -19,8 +26,11 @@ workflow {
 
     intro()
     print(params)
-    input_ch = channel.fromPath(params.input_dir)
-    manifest_ch = buildManifest(input_ch)
+    susie_ch = channel.fromPath(params.susie_dir)
+    sumstats_ch = channel.fromPath(params.sumstats_dir)
+    // Order of the channel [susie_path, sumstats_path]
+    input_ch = susie_ch.mix(sumstats_ch)
+    manifest_ch = Manifest(input_ch)
     // Transform the channel to [meta, cs_path, lbf_path]
     datasets = manifest_ch.splitCsv(sep: '\t', header: true)
         | map { r ->
@@ -29,9 +39,10 @@ workflow {
                     id: "${r.study_id}_${r.dataset_id}",
                     study_id: r.study_id,
                     dataset_id: r.dataset_id,
+                    sumstats_path: "${params.sumstats_dir}/${r.sumstats_path}",
                 ],
-                file(r.susie_cs_path),
-                file(r.susie_lbf_path),
+                file("${params.susie_dir}/${r.susie_cs_path}"),
+                file("${params.susie_dir}/${r.susie_lbf_path}"),
             ]
         }
     datasets.view()
