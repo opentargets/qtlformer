@@ -12,3 +12,4 @@ outputs
 .venv
 outdir
 logs
+testdata/output
