@@ -1,0 +1,3 @@
+study_id	dataset_id	susie_cs_path	susie_lbf_path	sumstats_path
+QTS000001	QTD000001	susie/QTS000001/QTD000001/QTD000001.credible_sets.parquet	susie/QTS000001/QTD000001/QTD000001.lbf_variable.parquet	sumstats/QTS000001/QTD000001/QTD000001.cc.parquet
+QTS000001	QTD000002	susie/QTS000001/QTD000002/QTD000002.credible_sets.parquet	susie/QTS000001/QTD000002/QTD000002.lbf_variable.parquet	sumstats/QTS000001/QTD000002/QTD000002.cc.parquet
