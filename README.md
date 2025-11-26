@@ -32,6 +32,14 @@ To run the full pipeline, one configuration is implemented for Google Cloud.
 nextflow run main.nf -profile googleCloud
 ```
 
+Testing on google cloud sample
+
+```{bash}
+nextflow run main.nf -profile googleCloudTest
+```
+
+NOTE: Make sure to set up the dataset in the referenced cloud buckets before running the cloud test.
+
 ## Inputs
 
 Pipeline expects the datasets to be in a follwing structure:

@@ -30,7 +30,7 @@ workflow {
     input_ch = susie_ch.combine(sumstats_ch)
     manifest_ch = Manifest(input_ch)
     // Transform the channel to [meta, cs_path, lbf_path]
-    base_dir = new File(params.susie_dir.toString()).parent
+    base_dir = params.susie_dir.toString().replaceAll("/susie\$", "")
     dataset_ch = manifest_ch.splitCsv(sep: '\t', header: true)
         | map { r ->
             [
@@ -38,7 +38,7 @@ workflow {
                     id: "${r.study_id}_${r.dataset_id}",
                     study_id: r.study_id,
                     dataset_id: r.dataset_id,
-                    sumstats_path: "${params.sumstats_dir}/${r.sumstats_path}",
+                    sumstats_path: "${base_dir}/${r.sumstats_path}",
                 ],
                 file("${base_dir}/${r.susie_cs_path}"),
                 file("${base_dir}/${r.susie_lbf_path}"),

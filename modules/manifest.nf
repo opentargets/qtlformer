@@ -1,5 +1,5 @@
 process Manifest {
-  label 'regular'
+  label 'manifest'
   publishDir "${params.output_dir}", mode: 'copy', pattern: 'manifest.tsv'
 
   input:

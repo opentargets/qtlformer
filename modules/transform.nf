@@ -1,5 +1,5 @@
 process Transform {
-    label 'regular', 'copy'
+    label 'transform', 'spark'
 
     publishDir "${params.output_dir}", mode: 'copy', pattern: 'study_locus/*'
     publishDir "${params.output_dir}", mode: 'copy', pattern: 'study_index/*'
