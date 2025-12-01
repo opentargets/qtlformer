@@ -13,3 +13,6 @@ outputs
 outdir
 logs
 testdata/output
+testdata/nftest_work/
+.nf-test/
+.nf-test.log

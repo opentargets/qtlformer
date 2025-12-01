@@ -3,3 +3,6 @@ VERSION ?=  $(shell grep -m 1 'version = ' tools/pyproject.toml | sed 's/version
 
 build-images:
 	docker build -t qtlformer:$(VERSION) .
+
+test-qtlformer:
+	nf-test test .

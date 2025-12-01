@@ -3,6 +3,10 @@ nextflow.enable.dsl = 2
 include { Manifest  } from './modules/manifest.nf'
 include { Transform } from './modules/transform.nf'
 
+
+/*
+    Intro function to log parameters
+*/
 def intro() {
     log.info(
         """
@@ -20,10 +24,12 @@ def intro() {
 }
 
 
-workflow {
+/*
+    QTLFormer workflow
+    NOTE: the distinction of this workflow is to allow testing with nf-test
+*/
+workflow qtlformer {
 
-    intro()
-    print(params)
     susie_ch = channel.fromPath(params.susie_dir)
     sumstats_ch = channel.fromPath(params.sumstats_dir)
     // Order of the channel [susie_path, sumstats_path]
@@ -45,5 +51,15 @@ workflow {
             ]
         }
     Transform(dataset_ch, params.metadata)
+}
+
+
+/*
+    Main workflow
+*/
+workflow  {
+
+    intro()
+    qtlformer()
     workflow.onComplete { log.info("Pipeline complete!") }
 }

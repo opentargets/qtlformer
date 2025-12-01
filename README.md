@@ -8,6 +8,7 @@ This pipeline allows to process the `eQTL Catalogue` fine-mapping results into t
 - Nextflow
 - Google Cloud SDK
 - Docker (testing)
+- nf-test (testing)
 
 ## Flow
 
@@ -23,8 +24,12 @@ The pipeline has following steps:
 Check the execution in with the `test` profile. This configuration uses small test datasets stored in `testdata/susie` and `testdata/sumstats` folders.
 
 ```{bash}
-nextflow run main.nf -profile test
+make test-qtlformer # Run nf-test command
 ```
+
+> [!NOTE]
+> Make sure to have java >17 installed and set as default java version, as nextflow depends on it.
+
 
 To run the full pipeline, one configuration is implemented for Google Cloud.
 
@@ -118,3 +123,6 @@ To run the tests for the `qtlformer` tools package, navigate to the `tools` dire
 ```{bash}
 uv sync --all-groups && uv run pytest
 ```
+
+> [!NOTE]
+> Make sure to have java 11 installed and set as default java version, as pyspark depends on it.

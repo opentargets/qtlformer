@@ -1,0 +1,18 @@
+nextflow_workflow {
+
+    name "Test Workflow main.nf"
+    script "main.nf"
+
+    test("Should run without failures") {
+        when {
+            workflow "qtlformer"
+        }
+
+        then {
+            assert workflow.success
+        }
+    }
+
+}
+
+
