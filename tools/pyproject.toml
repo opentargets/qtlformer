@@ -1,13 +1,13 @@
 [project]
 name = "qtlformer"
-version = "0.3.4"
+version = "0.3.5"
 description = "Tools to transform eQTL Catalogue credible sets to gentropy StudyLocus and StudyIndex"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "fsspec>=2025.10.0",
-    "gentropy>=3.0.0",
     "pandas[parquet]>=2.3.3",
     "typer>=0.20.0",
+    "gentropy",
 ]
 
 [build-system]
