@@ -1,6 +1,6 @@
 [project]
 name = "qtlformer"
-version = "0.3.3"
+version = "0.3.4"
 description = "Tools to transform eQTL Catalogue credible sets to gentropy StudyLocus and StudyIndex"
 requires-python = ">=3.12,<3.13"
 dependencies = [
@@ -21,7 +21,7 @@ qtlformer = "qtlformer:cli"
 packages = ["src/qtlformer"]
 
 [tool.uv.sources]
-gentropy = { git = "https://github.com/opentargets/gentropy", tag = "v3.1.0-dev.2" }
+gentropy = { git = "https://github.com/opentargets/gentropy", tag = "v3.1.0-dev.3" }
 
 [dependency-groups]
 dev = ["mypy>=1.18.2", "pytest>=9.0.1", "ruff>=0.14.5"]
