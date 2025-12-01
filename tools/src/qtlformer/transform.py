@@ -43,7 +43,9 @@ class EqtlCatalogueTransformer:
         config = EqtlCatalogueConfig()
         session = Session.find()
         metadata = self.transform_metadata(metadata_path)
+
         fm = self.transform_fm(cs_path, lbf_path, metadata, sumstats_path)
+
         (
             EqtlCatalogueFinemapping.from_susie_results(fm)
             .validate_lead_pvalue(pvalue_cutoff=config.eqtl_lead_pvalue_threshold)

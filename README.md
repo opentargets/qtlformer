@@ -110,3 +110,11 @@ The `manifest.tsv` file contains the list of processed datasets.
 
 Metrics and reports from pipeline run
 
+
+## Testing qtlformer tools package
+
+To run the tests for the `qtlformer` tools package, navigate to the `tools` directory and execute the following command:
+
+```{bash}
+uv sync --all-groups && uv run pytest
+```
